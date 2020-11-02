@@ -35,7 +35,7 @@ input.onButtonPressed(Button.AB, function on_button_pressed_ab() {
     
 })
 radio.onReceivedValue(function on_received_value(name: string, value: number) {
-    // executed by clients stationID 
+    // executed by clients stationID > 0
     
     if (name == "RSTSYNC") {
         syncedTimes = 0

@@ -1,5 +1,5 @@
 {
-    "name": "remote sensing",
+    "name": "remote sensing with rssi",
     "description": "",
     "dependencies": {
         "core": "*",
