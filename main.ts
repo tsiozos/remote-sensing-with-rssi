@@ -1,7 +1,17 @@
 let stationID = 0
 // 0=repeater/pc station, 1-9 = transmitter/sensor with ID
+let StationIDs = _py.range(10).fill(0)
+// we hold the stationIDs here
+// StationIDs.fill(0)
+let StationSNs = _py.range(10).fill(0)
+// we hold the station S/N here
+// StationSNs.fill(0)
+let StationData = _py.range(10).fill(0)
+// for each station we keep the last sent data
+// StationData.fill(0)
 let RSSIv = control.createBuffer(10)
 // statistics from the client stations (ID > 0) values -120 ~ -40
+RSSIv.fill(0)
 let RSSIfromServer = -120
 // the RSSI value from the last message from server
 basic.showNumber(stationID)
@@ -88,4 +98,5 @@ function triesFromRSSI(rssi: any, y: number, maxtries: number): number {
 // print(triesFromRSSI(-85,0.9,20))
 // print(triesFromRSSI(-85,0.95,20))
 // print(triesFromRSSI(-95,0.95,20))
-console.log("" + (control.deviceSerialNumber() ^ 0xFFFFFFFF))
+// print(str(control.device_serial_number() ^ 0xFFFFFFFF ))
+console.log("" + StationSNs.join())

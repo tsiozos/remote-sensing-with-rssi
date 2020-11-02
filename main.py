@@ -1,6 +1,13 @@
 stationID = 0 #0=repeater/pc station, 1-9 = transmitter/sensor with ID
 
+StationIDs=range(10).fill(0) #we hold the stationIDs here
+#StationIDs.fill(0)
+StationSNs=range(10).fill(0)  #we hold the station S/N here
+#StationSNs.fill(0)
+StationData=range(10).fill(0)  #for each station we keep the last sent data
+#StationData.fill(0)
 RSSIv=bytearray(10) #statistics from the client stations (ID > 0) values -120 ~ -40
+RSSIv.fill(0)
 RSSIfromServer = -120 #the RSSI value from the last message from server
 
 
@@ -78,4 +85,5 @@ def triesFromRSSI(rssi: float, y:float, maxtries: int):
 #print(triesFromRSSI(-85,0.9,20))
 #print(triesFromRSSI(-85,0.95,20))
 #print(triesFromRSSI(-95,0.95,20))
-print(str(control.device_serial_number() ^ 0xFFFFFFFF ))
+#print(str(control.device_serial_number() ^ 0xFFFFFFFF ))
+print(str(StationSNs.join()))
