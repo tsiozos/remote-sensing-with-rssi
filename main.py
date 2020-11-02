@@ -77,3 +77,4 @@ def triesFromRSSI(rssi: float, y:float, maxtries: int):
 #print(triesFromRSSI(-85,0.9,20))
 #print(triesFromRSSI(-85,0.95,20))
 #print(triesFromRSSI(-95,0.95,20))
+print(str(control.device_serial_number()))

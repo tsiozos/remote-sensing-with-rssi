@@ -84,3 +84,7 @@ function triesFromRSSI(rssi: any, y: number, maxtries: number): number {
     return t
 }
 
+// print(triesFromRSSI(-85,0.9,20))
+// print(triesFromRSSI(-85,0.95,20))
+// print(triesFromRSSI(-95,0.95,20))
+console.log("" + control.deviceSerialNumber())
