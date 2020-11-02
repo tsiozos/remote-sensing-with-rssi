@@ -1,6 +1,8 @@
 stationID = 0 #0=repeater/pc station, 1-9 = transmitter/sensor with ID
-syncedTimes = 0 # how many SYNC signals have been received from this station
-syncingNOW = False #syncing state: is this station syncing?
+
+RSSIv=bytearray(10) #statistics from the client stations (ID > 0) values -120 ~ -40
+RSSIfromServer = -120 #the RSSI value from the last message from server
+
 
 basic.show_number(stationID)
 basic.clear_screen()
@@ -17,7 +19,7 @@ def on_button_pressed_ab():
     # 90 calibration messages imply success rate 0.99, packet loss 0.95
     # RESET the station counters first
         for i in range(100):
-            radio.send_value("RSTSYNC", 0)
+            radio.send_value("RSTSYNC", i)
             basic.pause(50)
 
         for i in range(100):
@@ -31,15 +33,13 @@ def on_button_pressed_ab():
 input.on_button_pressed(Button.AB, on_button_pressed_ab)
 
 def on_received_value(name, value):     #executed by clients stationID > 0
-    global syncedTimes,syncingNOW
+    global RSSIfromServer
     if name=="RSTSYNC":
-        syncedTimes = 0
-        syncingNOW = True
-    elif name=="SYNC100" and syncingNOW:
-            syncedTimes = syncedTimes + 1
+        RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
+    elif name=="SYNC100":
+        RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
     elif name=="ENDSYNC":
-            syncingNOW = False
-
+        RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
 radio.on_received_value(on_received_value)
 
 #------------------- SETUP -----------------------
@@ -66,7 +66,8 @@ def lossP(y,n):
 
 def triesFromRSSI(rssi: float, y:float, maxtries: int):
     rssi2 = rssi + 100
-    p = Math.min(1,5936.2673*rssi2**(-3.7231))
+    p = Math.min(1,5936.2673*rssi2**(-3.7231)) # this function may return a p > 1
+                                               # so we limit it to 1
     if p==1:
         t = maxtries
     else:
@@ -77,4 +78,4 @@ def triesFromRSSI(rssi: float, y:float, maxtries: int):
 #print(triesFromRSSI(-85,0.9,20))
 #print(triesFromRSSI(-85,0.95,20))
 #print(triesFromRSSI(-95,0.95,20))
-print(str(control.device_serial_number()))
+print(str(control.device_serial_number() ^ 0xFFFFFFFF ))
