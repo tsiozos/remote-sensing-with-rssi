@@ -45,6 +45,7 @@ input.onButtonPressed(Button.AB, function on_button_pressed_ab() {
     
 })
 radio.onReceivedValue(function on_received_value(name: string, value: number) {
+    let statID: number;
     // executed by clients stationID > 0
     
     if (name == "RSTSYNC") {
@@ -53,9 +54,21 @@ radio.onReceivedValue(function on_received_value(name: string, value: number) {
         RSSIfromServer = radio.receivedPacket(RadioPacketProperty.SignalStrength)
     } else if (name == "ENDSYNC") {
         RSSIfromServer = radio.receivedPacket(RadioPacketProperty.SignalStrength)
+    } else if (name.slice(0, 6) == "DATARQ") {
+        statID = parseInt(name.slice(6, 8))
+        //  the last 2 digits are the station ID that must send data
+        statID = Math.constrain(statID, 0, 9)
+        if (statID == stationID) {
+            sendData()
+        }
+        
     }
     
 })
+function sendData() {
+    
+}
+
 // ------------------- SETUP -----------------------
 // change the transmitter ID. Up to 9 transmitters
 input.onButtonPressed(Button.A, function on_button_pressed_a() {
@@ -100,3 +113,5 @@ function triesFromRSSI(rssi: any, y: number, maxtries: number): number {
 // print(triesFromRSSI(-95,0.95,20))
 // print(str(control.device_serial_number() ^ 0xFFFFFFFF ))
 console.log("" + StationSNs.join())
+let k = "hello"
+console.log(k.slice(0, 3))

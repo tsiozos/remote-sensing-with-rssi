@@ -40,14 +40,22 @@ def on_button_pressed_ab():
 input.on_button_pressed(Button.AB, on_button_pressed_ab)
 
 def on_received_value(name, value):     #executed by clients stationID > 0
-    global RSSIfromServer
+    global RSSIfromServer,stationID
     if name=="RSTSYNC":
         RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
     elif name=="SYNC100":
         RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
     elif name=="ENDSYNC":
         RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
+    elif name[0:6]=="DATARQ":
+        statID = int(name[6:8])     # the last 2 digits are the station ID that must send data
+        statID = Math.constrain(statID, 0, 9)
+        if statID == stationID:
+            sendData()
 radio.on_received_value(on_received_value)
+
+def sendData():
+    pass
 
 #------------------- SETUP -----------------------
 #change the transmitter ID. Up to 9 transmitters
@@ -87,3 +95,5 @@ def triesFromRSSI(rssi: float, y:float, maxtries: int):
 #print(triesFromRSSI(-95,0.95,20))
 #print(str(control.device_serial_number() ^ 0xFFFFFFFF ))
 print(str(StationSNs.join()))
+k = "hello"
+print(k[0:3])
