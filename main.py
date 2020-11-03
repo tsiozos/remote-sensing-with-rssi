@@ -9,7 +9,8 @@ StationData=range(10).fill(0)  #for each station we keep the last sent data
 RSSIv=bytearray(10) #statistics from the client stations (ID > 0) values -120 ~ -40
 RSSIv.fill(0)
 RSSIfromServer = -120 #the RSSI value from the last message from server
-
+SensorData=bytearray(18)
+SensorData.fill(0)
 
 basic.show_number(stationID)
 basic.clear_screen()
@@ -41,12 +42,13 @@ input.on_button_pressed(Button.AB, on_button_pressed_ab)
 
 def on_received_value(name, value):     #executed by clients stationID > 0
     global RSSIfromServer,stationID
+    RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
     if name=="RSTSYNC":
-        RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
+        pass
     elif name=="SYNC100":
-        RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
+        pass
     elif name=="ENDSYNC":
-        RSSIfromServer = radio.received_packet(RadioPacketProperty.SIGNAL_STRENGTH)
+        pass
     elif name[0:6]=="DATARQ":
         statID = int(name[6:8])     # the last 2 digits are the station ID that must send data
         statID = Math.constrain(statID, 0, 9)
@@ -55,6 +57,14 @@ def on_received_value(name, value):     #executed by clients stationID > 0
 radio.on_received_value(on_received_value)
 
 def sendData():
+
+    global RSSIfromServer,SensorData
+    SensorData[0] = stationID   # first byte is the current stationID
+    SensorData[1] = input.compass_heading()
+    SensorData[2] = input.temperature()
+    SensorData[3] = input.rotation(Rotation.PITCH)
+    SensorData[4] = input.rotation(Rotation.ROLL)
+    SensorData[5] = input.light_level()
     pass
 
 #------------------- SETUP -----------------------
@@ -94,6 +104,11 @@ def triesFromRSSI(rssi: float, y:float, maxtries: int):
 #print(triesFromRSSI(-85,0.95,20))
 #print(triesFromRSSI(-95,0.95,20))
 #print(str(control.device_serial_number() ^ 0xFFFFFFFF ))
-print(str(StationSNs.join()))
-k = "hello"
-print(k[0:3])
+#print(str(StationSNs.join()))
+#k = "hello"
+#print(k[0:3])
+
+for i in range(100):
+    print(input.rotation(Rotation.PITCH))
+    print(input.rotation(Rotation.ROLL))
+    basic.pause(1000)

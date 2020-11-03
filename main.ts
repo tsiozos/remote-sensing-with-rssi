@@ -14,6 +14,8 @@ let RSSIv = control.createBuffer(10)
 RSSIv.fill(0)
 let RSSIfromServer = -120
 // the RSSI value from the last message from server
+let SensorData = control.createBuffer(18)
+SensorData.fill(0)
 basic.showNumber(stationID)
 basic.clearScreen()
 radio.setGroup(77)
@@ -48,12 +50,13 @@ radio.onReceivedValue(function on_received_value(name: string, value: number) {
     let statID: number;
     // executed by clients stationID > 0
     
+    RSSIfromServer = radio.receivedPacket(RadioPacketProperty.SignalStrength)
     if (name == "RSTSYNC") {
-        RSSIfromServer = radio.receivedPacket(RadioPacketProperty.SignalStrength)
+        
     } else if (name == "SYNC100") {
-        RSSIfromServer = radio.receivedPacket(RadioPacketProperty.SignalStrength)
+        
     } else if (name == "ENDSYNC") {
-        RSSIfromServer = radio.receivedPacket(RadioPacketProperty.SignalStrength)
+        
     } else if (name.slice(0, 6) == "DATARQ") {
         statID = parseInt(name.slice(6, 8))
         //  the last 2 digits are the station ID that must send data
@@ -66,6 +69,14 @@ radio.onReceivedValue(function on_received_value(name: string, value: number) {
     
 })
 function sendData() {
+    
+    SensorData[0] = stationID
+    //  first byte is the current stationID
+    SensorData[1] = input.compassHeading()
+    SensorData[2] = input.temperature()
+    SensorData[3] = input.rotation(Rotation.Pitch)
+    SensorData[4] = input.rotation(Rotation.Roll)
+    SensorData[5] = input.lightLevel()
     
 }
 
@@ -112,6 +123,11 @@ function triesFromRSSI(rssi: any, y: number, maxtries: number): number {
 // print(triesFromRSSI(-85,0.95,20))
 // print(triesFromRSSI(-95,0.95,20))
 // print(str(control.device_serial_number() ^ 0xFFFFFFFF ))
-console.log("" + StationSNs.join())
-let k = "hello"
-console.log(k.slice(0, 3))
+// print(str(StationSNs.join()))
+// k = "hello"
+// print(k[0:3])
+for (let i = 0; i < 100; i++) {
+    console.log(input.rotation(Rotation.Pitch))
+    console.log(input.rotation(Rotation.Roll))
+    basic.pause(1000)
+}
