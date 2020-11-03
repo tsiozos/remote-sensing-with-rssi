@@ -62,9 +62,13 @@ def sendData():
     SensorData[0] = stationID   # first byte is the current stationID
     SensorData[1] = input.compass_heading()
     SensorData[2] = input.temperature()
-    SensorData[3] = input.rotation(Rotation.PITCH)
-    SensorData[4] = input.rotation(Rotation.ROLL)
+    SensorData[3] = Math.map(input.rotation(Rotation.PITCH),-180,180,0,255)
+    SensorData[4] = Math.map(input.rotation(Rotation.ROLL),-180,180,0,255)
     SensorData[5] = input.light_level()
+    SensorData[6] = Math.map(input.acceleration(Dimension.X),-1024,1024,0,255)
+    SensorData[7] = Math.map(input.acceleration(Dimension.Y),-1024,1024,0,255)
+    SensorData[8] = Math.map(input.acceleration(Dimension.Z),-1024,1024,0,255)
+
     pass
 
 #------------------- SETUP -----------------------
@@ -108,7 +112,12 @@ def triesFromRSSI(rssi: float, y:float, maxtries: int):
 #k = "hello"
 #print(k[0:3])
 
+pitchroll = bytearray(2)
 for i in range(100):
-    print(input.rotation(Rotation.PITCH))
-    print(input.rotation(Rotation.ROLL))
-    basic.pause(1000)
+    pit = input.rotation(Rotation.PITCH)
+    rol = input.rotation(Rotation.ROLL)
+    print(str(pit)+", "+str(rol))
+    pitchroll[0]=Math.map(pit,-180,180,0,255)
+    pitchroll[1]=Math.map(rol,-180,180,0,255)
+    print(">> "+str(pitchroll[0])+", "+str(pitchroll[1]))
+    basic.pause(2000)

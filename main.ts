@@ -1,3 +1,5 @@
+let pit: number;
+let rol: number;
 let stationID = 0
 // 0=repeater/pc station, 1-9 = transmitter/sensor with ID
 let StationIDs = _py.range(10).fill(0)
@@ -74,9 +76,12 @@ function sendData() {
     //  first byte is the current stationID
     SensorData[1] = input.compassHeading()
     SensorData[2] = input.temperature()
-    SensorData[3] = input.rotation(Rotation.Pitch)
-    SensorData[4] = input.rotation(Rotation.Roll)
+    SensorData[3] = Math.map(input.rotation(Rotation.Pitch), -180, 180, 0, 255)
+    SensorData[4] = Math.map(input.rotation(Rotation.Roll), -180, 180, 0, 255)
     SensorData[5] = input.lightLevel()
+    SensorData[6] = Math.map(input.acceleration(Dimension.X), -1024, 1024, 0, 255)
+    SensorData[7] = Math.map(input.acceleration(Dimension.Y), -1024, 1024, 0, 255)
+    SensorData[8] = Math.map(input.acceleration(Dimension.Z), -1024, 1024, 0, 255)
     
 }
 
@@ -126,8 +131,13 @@ function triesFromRSSI(rssi: any, y: number, maxtries: number): number {
 // print(str(StationSNs.join()))
 // k = "hello"
 // print(k[0:3])
+let pitchroll = control.createBuffer(2)
 for (let i = 0; i < 100; i++) {
-    console.log(input.rotation(Rotation.Pitch))
-    console.log(input.rotation(Rotation.Roll))
-    basic.pause(1000)
+    pit = input.rotation(Rotation.Pitch)
+    rol = input.rotation(Rotation.Roll)
+    console.log("" + pit + ", " + ("" + rol))
+    pitchroll[0] = Math.map(pit, -180, 180, 0, 255)
+    pitchroll[1] = Math.map(rol, -180, 180, 0, 255)
+    console.log(">> " + ("" + pitchroll[0]) + ", " + ("" + pitchroll[1]))
+    basic.pause(2000)
 }
