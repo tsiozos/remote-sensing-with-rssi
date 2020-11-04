@@ -1,5 +1,3 @@
-let pit: number;
-let rol: number;
 let stationID = 0
 // 0=repeater/pc station, 1-9 = transmitter/sensor with ID
 let StationIDs = _py.range(10).fill(0)
@@ -70,6 +68,10 @@ radio.onReceivedValue(function on_received_value(name: string, value: number) {
     }
     
 })
+//  the server receives client data
+radio.onReceivedBuffer(function on_received_buffer(receivedBuffer: Buffer) {
+    
+})
 function sendData() {
     
     SensorData[0] = stationID
@@ -82,7 +84,12 @@ function sendData() {
     SensorData[6] = Math.map(input.acceleration(Dimension.X), -1024, 1024, 0, 255)
     SensorData[7] = Math.map(input.acceleration(Dimension.Y), -1024, 1024, 0, 255)
     SensorData[8] = Math.map(input.acceleration(Dimension.Z), -1024, 1024, 0, 255)
-    
+    // calculate how many tries based on current RSSI and 95% success
+    let tries = triesFromRSSI(RSSIfromServer, 0.95, 8)
+    for (let i = 0; i < tries + 1; i++) {
+        radio.sendBuffer(SensorData)
+        basic.pause(200)
+    }
 }
 
 // ------------------- SETUP -----------------------
@@ -124,20 +131,3 @@ function triesFromRSSI(rssi: any, y: number, maxtries: number): number {
     return t
 }
 
-// print(triesFromRSSI(-85,0.9,20))
-// print(triesFromRSSI(-85,0.95,20))
-// print(triesFromRSSI(-95,0.95,20))
-// print(str(control.device_serial_number() ^ 0xFFFFFFFF ))
-// print(str(StationSNs.join()))
-// k = "hello"
-// print(k[0:3])
-let pitchroll = control.createBuffer(2)
-for (let i = 0; i < 100; i++) {
-    pit = input.rotation(Rotation.Pitch)
-    rol = input.rotation(Rotation.Roll)
-    console.log("" + pit + ", " + ("" + rol))
-    pitchroll[0] = Math.map(pit, -180, 180, 0, 255)
-    pitchroll[1] = Math.map(rol, -180, 180, 0, 255)
-    console.log(">> " + ("" + pitchroll[0]) + ", " + ("" + pitchroll[1]))
-    basic.pause(2000)
-}

@@ -56,6 +56,11 @@ def on_received_value(name, value):     #executed by clients stationID > 0
             sendData()
 radio.on_received_value(on_received_value)
 
+# the server receives client data
+def on_received_buffer(receivedBuffer):
+    pass
+radio.on_received_buffer(on_received_buffer)
+
 def sendData():
 
     global RSSIfromServer,SensorData
@@ -69,7 +74,12 @@ def sendData():
     SensorData[7] = Math.map(input.acceleration(Dimension.Y),-1024,1024,0,255)
     SensorData[8] = Math.map(input.acceleration(Dimension.Z),-1024,1024,0,255)
 
-    pass
+    #calculate how many tries based on current RSSI and 95% success
+    tries = triesFromRSSI(RSSIfromServer, 0.95, 8)
+    
+    for i in range(tries+1):
+        radio.send_buffer(SensorData)
+        basic.pause(200)
 
 #------------------- SETUP -----------------------
 #change the transmitter ID. Up to 9 transmitters
@@ -112,12 +122,12 @@ def triesFromRSSI(rssi: float, y:float, maxtries: int):
 #k = "hello"
 #print(k[0:3])
 
-pitchroll = bytearray(2)
-for i in range(100):
-    pit = input.rotation(Rotation.PITCH)
-    rol = input.rotation(Rotation.ROLL)
-    print(str(pit)+", "+str(rol))
-    pitchroll[0]=Math.map(pit,-180,180,0,255)
-    pitchroll[1]=Math.map(rol,-180,180,0,255)
-    print(">> "+str(pitchroll[0])+", "+str(pitchroll[1]))
-    basic.pause(2000)
+#pitchroll = bytearray(2)
+#for i in range(100):
+#    pit = input.rotation(Rotation.PITCH)
+#    rol = input.rotation(Rotation.ROLL)
+#    print(str(pit)+", "+str(rol))
+#    pitchroll[0]=Math.map(pit,-180,180,0,255)
+#    pitchroll[1]=Math.map(rol,-180,180,0,255)
+#    print(">> "+str(pitchroll[0])+", "+str(pitchroll[1]))
+#    basic.pause(2000)
